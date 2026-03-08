@@ -84,7 +84,7 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
-          script: cd /var/www/kejani/backend && bash deploy.sh
+          script: cd /var/www/kejani/Ke-jani-backend/kejani_backend && bash deploy.sh
 
       - name: Health check (5 retries with backoff)
         run: |
