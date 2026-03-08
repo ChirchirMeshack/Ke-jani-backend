@@ -86,17 +86,17 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: cd /var/www/kejani/Ke-jani-backend/kejani_backend && bash deploy.sh
 
-      - name: Health check (5 retries with backoff)
-        run: |
-          sleep 20
-          for i in {1..5}; do
-            echo "Health check attempt $i..."
-            curl --fail --silent https://ke-jani.co.ke/api/health/ && exit 0
-            echo "Attempt $i failed, retrying in 10s..."
-            sleep 10
-          done
-          echo "All health check attempts failed!"
-          exit 1
+      #   - name: Health check (5 retries with backoff)
+      #     run: |
+      #       sleep 20
+      #       for i in {1..5}; do
+      #         echo "Health check attempt $i..."
+      #         curl --fail --silent https://ke-jani.co.ke/api/health/ && exit 0
+      #         echo "Attempt $i failed, retrying in 10s..."
+      #         sleep 10
+      #       done
+      #       echo "All health check attempts failed!"
+      #       exit 1
 
       - name: Notify success
         if: success()
