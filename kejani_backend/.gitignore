@@ -9,8 +9,10 @@ __pycache__/
 
 # Django local settings & secrets
 .env
+!env.example
 .env.*
 environment/
+
 
 
 settings_local.py
