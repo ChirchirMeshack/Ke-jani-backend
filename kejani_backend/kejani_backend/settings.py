@@ -1,7 +1,6 @@
-from logging import debug
 import os
 from pathlib import Path
-from decouple import config
+from decouple import config, Csv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -11,17 +10,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*vo$neq=&0x(uz$p=8$!=f-vk(2k!!cv&dm-%k(q&mt0ij)ci)'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-production')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config("DEBUG", default=False, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-
-ALLOWED_HOSTS = [
-    "localhost",
-    "127.0.0.1",
-    "0.0.0.0"
-]
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=Csv())
 
 
 # Application definition
@@ -58,15 +52,15 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'kejani_backend.urls'
@@ -94,14 +88,13 @@ WSGI_APPLICATION = 'kejani_backend.wsgi.application'
 
 
 DATABASES = {
-    "default":{
-        "ENGINE":"django.db.backends.postgresql",
-        "NAME":config("DB_NAME",default="kejani"),
-        "USER":config("DB_USER",default="postgres"),
-        "PASSWORD":config("DB_PASSWORD",default=""),
-        "HOST":config("DB_HOST",default="localhost"),
-        "PORT":config("DB_PORT",default="localhost"),
-        
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': config('DB_NAME', default='kejani'),
+        'USER': config('DB_USER', default='postgres'),
+        'PASSWORD': config('DB_PASSWORD', default=''),
+        'HOST': config('DB_HOST', default='localhost'),
+        'PORT': config('DB_PORT', default='5432'),
     }
 }
 
@@ -141,12 +134,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-#where colleststatic will put files (for production)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
@@ -230,15 +218,38 @@ SPECTACULAR_SETTINGS = {
 
 
 
-CORS_ALLOWED_ORIGINS=[
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]   
+# CORS and CSRF (required in Django 4+ behind reverse proxy)
+CORS_ALLOWED_ORIGINS = config(
+    'CORS_ALLOWED_ORIGINS',
+    default='http://localhost:3000,http://127.0.0.1:3000',
+    cast=Csv(),
+)
+CSRF_TRUSTED_ORIGINS = config(
+    'CSRF_TRUSTED_ORIGINS',
+    default='http://localhost:3000,http://127.0.0.1:3000',
+    cast=Csv(),
+)
 
 
-#Enabling compression and caching
-STORAGE = {
-    "staticfiles":{
-        "BACKEND":"whitenoise.storage.CompressedManifestStaticFilesStorage",
+# ----------  HTTPS / Security settings (production)  ----------
+# These are safe to keep enabled even in dev; Django ignores most
+# of them when DEBUG=True or when not behind HTTPS.
+
+SECURE_SSL_REDIRECT            = not DEBUG
+SECURE_PROXY_SSL_HEADER        = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE          = not DEBUG
+CSRF_COOKIE_SECURE             = not DEBUG
+SECURE_HSTS_SECONDS            = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD            = True
+SECURE_CONTENT_TYPE_NOSNIFF    = True
+SECURE_REFERRER_POLICY         = 'strict-origin-when-cross-origin'
+X_FRAME_OPTIONS                = 'DENY'
+
+
+# Enabling compression and caching (WhiteNoise)
+STORAGES = {
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     }
 }
