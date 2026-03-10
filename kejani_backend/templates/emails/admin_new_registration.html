@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto;">
+  <div style="background: #1a5632; padding: 20px; text-align: center;">
+    <h1 style="color: #fff; margin: 0;">KE-JANI</h1>
+  </div>
+  <div style="padding: 30px 20px;">
+    <h2>New {{ user.get_role_display }} Registration</h2>
+    <p>A new <strong>{{ user.get_role_display }}</strong> has registered and is awaiting approval.</p>
+    <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+      <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Name</td><td style="padding: 8px; border-bottom: 1px solid #eee;">{{ user.get_full_name }}</td></tr>
+      <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Email</td><td style="padding: 8px; border-bottom: 1px solid #eee;">{{ user.email }}</td></tr>
+      <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Phone</td><td style="padding: 8px; border-bottom: 1px solid #eee;">{{ user.phone }}</td></tr>
+      <tr><td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold;">Role</td><td style="padding: 8px; border-bottom: 1px solid #eee;">{{ user.get_role_display }}</td></tr>
+    </table>
+    <p>Please review and approve/reject from the admin panel.</p>
+  </div>
+  <div style="background: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #999;">
+    &copy; KE-JANI Admin Notification
+  </div>
+</body>
+</html>
