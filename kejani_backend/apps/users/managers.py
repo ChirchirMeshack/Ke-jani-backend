@@ -1,3 +1,4 @@
+import uuid
 from django.contrib.auth.models import BaseUserManager
 from django.db import models
 
@@ -15,9 +16,9 @@ class ActiveUserManager(BaseUserManager):
         if not email:
             raise ValueError('The Email field must be set')
         email = self.normalize_email(email)
-        # Auto-generate username from email prefix if not provided
+        # Auto-generate unique username if not provided
         if 'username' not in extra_fields or not extra_fields['username']:
-            extra_fields['username'] = email.split('@')[0]
+            extra_fields['username'] = uuid.uuid4().hex[:30]
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)

@@ -329,6 +329,13 @@ class InvitedPMRegistrationSerializer(serializers.Serializer):
     def validate(self, data):
         if data['password'] != data['password_confirm']:
             raise serializers.ValidationError({'password_confirm': 'Passwords do not match.'})
+            
+        invitation = getattr(self, '_invitation', None)
+        if invitation and data.get('email', '').strip().lower() != invitation.invited_email.lower():
+            raise serializers.ValidationError({
+                'email': 'This email does not match the invitation.'
+            })
+            
         return data
 
     def create(self, validated_data):
@@ -428,6 +435,13 @@ class InvitedTenantRegistrationSerializer(serializers.Serializer):
     def validate(self, data):
         if data['password'] != data['password_confirm']:
             raise serializers.ValidationError({'password_confirm': 'Passwords do not match.'})
+            
+        invitation = getattr(self, '_invitation', None)
+        if invitation and data.get('email', '').strip().lower() != invitation.invited_email.lower():
+            raise serializers.ValidationError({
+                'email': 'This email does not match the invitation.'
+            })
+            
         return data
 
     def create(self, validated_data):
