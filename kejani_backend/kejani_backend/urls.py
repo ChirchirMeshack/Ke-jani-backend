@@ -38,6 +38,9 @@ urlpatterns = [
     # Landlords
     path('api/landlords/', include('apps.landlords.urls')),
 
+    # Properties
+    path('api/properties/', include('apps.properties.urls', namespace='properties')),
+
     # Health
     path('api/health/', health_check),
 ]

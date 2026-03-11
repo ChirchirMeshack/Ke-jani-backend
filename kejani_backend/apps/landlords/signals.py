@@ -71,3 +71,41 @@ def create_landlord_profile_on_approval(sender, instance, created, **kwargs):
             send_approval_email(instance)
         except Exception:
             pass
+
+# ── Listen to properties app signals ────────────────────────────────
+# These handlers advance the onboarding wizard when a landlord adds
+# their first property (step 2) and first unit (step 3).
+# Imported lazily to avoid circular imports at module load time.
+
+def _get_property_created_signal():
+    from apps.properties.signals import property_created
+    return property_created
+
+def _get_unit_created_signal():
+    from apps.properties.signals import unit_created
+    return unit_created
+
+
+def on_property_created(sender, property_instance, landlord, **kwargs):
+    """Advance wizard Step 2 when landlord creates their first property."""
+    try:
+        landlord.complete_step("property")
+    except Exception:
+        pass  # Wizard step failure must never break property creation
+
+
+def on_unit_created(sender, unit_instance, property_instance, landlord, **kwargs):
+    """Advance wizard Step 3 when landlord creates their first unit."""
+    try:
+        landlord.complete_step("units")
+    except Exception:
+        pass
+
+
+def connect_property_signals():
+    """
+    Called from LandlordsConfig.ready() to wire up signal listeners.
+    Using a function instead of @receiver avoids import-time circular deps.
+    """
+    _get_property_created_signal().connect(on_property_created)
+    _get_unit_created_signal().connect(on_unit_created)

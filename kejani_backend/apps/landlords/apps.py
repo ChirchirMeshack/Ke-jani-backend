@@ -7,3 +7,6 @@ class LandlordsConfig(AppConfig):
 
     def ready(self):
         import apps.landlords.signals  # noqa — registers signal handlers on startup
+        # Connect cross-app signal listeners AFTER all apps are loaded
+        from apps.landlords.signals import connect_property_signals
+        connect_property_signals()
