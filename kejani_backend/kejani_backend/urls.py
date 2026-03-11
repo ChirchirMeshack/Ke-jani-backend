@@ -50,6 +50,9 @@ urlpatterns = [
     # Property Managers
     path('api/property-managers/', include('apps.property_managers.urls', namespace='property_managers')),
 
+    # Subscriptions
+    path('api/subscriptions/', include('apps.subscriptions.urls')),
+
     # Health
     path('api/health/', health_check),
 ]

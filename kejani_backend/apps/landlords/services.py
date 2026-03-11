@@ -86,17 +86,18 @@ def complete_profile_step(landlord, validated_data):
 
 def _create_landlord_trial(user, plan_slug):
     """
-    Creates a 14-day trial subscription for the landlord.
+    Creates a 30-day trial subscription for the landlord.
 
-    STUB — apps/subscriptions/ will implement create_trial_subscription().
-    Until then this is a silent no-op.
-    TODO: Remove the ImportError guard once apps/subscriptions/ is built.
+    Calls create_trial_subscription from the subscriptions app,
+    which also manages the syncing back to the Landlord profile.
     """
-    try:
-        from apps.subscriptions.services import create_trial_subscription
-        create_trial_subscription(user=user, plan_slug=plan_slug)
-    except ImportError:
-        pass  # TODO: remove when apps/subscriptions/ is implemented
+    from apps.subscriptions.services import create_trial_subscription
+    
+    # If plan_slug is empty, default it to the recommended plan (e.g. 'solo' for now)
+    if not plan_slug:
+        plan_slug = 'solo'
+        
+    create_trial_subscription(user=user, plan_slug=plan_slug)
 
 
 def get_landlord_or_404(user):

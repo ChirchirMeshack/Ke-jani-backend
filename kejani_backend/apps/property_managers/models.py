@@ -7,19 +7,13 @@ from django.utils import timezone
 User = get_user_model()
 
 # ── PM Subscription Tiers ─────────────────────────────────────────────
+# Left here as choices for the synced CharField
 PM_SUBSCRIPTION_TIERS = [
     ('starter_pm',      'Starter PM — up to 50 units, Ksh 3,000/mo'),
     ('professional_pm', 'Professional PM — up to 150 units, Ksh 6,000/mo'),
     ('enterprise_pm',   'Enterprise PM — custom pricing'),
 ]
 
-# ── Tier unit limits ──────────────────────────────────────────────────
-# -1 means unlimited. When apps/subscriptions/ is built, replace with DB lookup.
-PM_TIER_LIMITS = {
-    'starter_pm':      {'max_units': 50},
-    'professional_pm': {'max_units': 150},
-    'enterprise_pm':   {'max_units': -1},
-}
 
 # ── Approval status ───────────────────────────────────────────────────
 PM_APPROVAL_STATUS = [
