@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'django_celery_beat',
     # Local
     'apps.users',
+    'apps.banking',
+    'apps.landlords',
 ]
 
 MIDDLEWARE = [
@@ -111,6 +113,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
     'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle',
@@ -121,6 +125,7 @@ REST_FRAMEWORK = {
         'login': '10/minute',
         'password_reset': '5/hour',
         'registration': '5/hour',
+        'upload_signature': '10/minute',
     },
 }
 
@@ -255,6 +260,14 @@ else:
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@ke-jani.com')
 ADMIN_NOTIFICATION_EMAIL = config('ADMIN_NOTIFICATION_EMAIL', default='admin@ke-jani.com')
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
+
+
+# ──────────────────────────────────────────────────────────────────
+# CLOUDINARY
+# ──────────────────────────────────────────────────────────────────
+CLOUDINARY_CLOUD_NAME = config('CLOUDINARY_CLOUD_NAME', default='your-cloud-name')
+CLOUDINARY_API_KEY = config('CLOUDINARY_API_KEY', default='123456789012345')
+CLOUDINARY_SECRET = config('CLOUDINARY_SECRET', default='your-secret-key-here')
 
 
 # ──────────────────────────────────────────────────────────────────

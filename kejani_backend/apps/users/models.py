@@ -38,6 +38,16 @@ class User(AbstractUser):
     phone_verified = models.BooleanField(default=False)
     email_verified = models.BooleanField(default=False)
 
+    id_number = models.CharField(
+        max_length=20, blank=True,
+        help_text='National ID number. Collected at registration, stored here.',
+    )
+    terms_accepted_at = models.DateTimeField(
+        null=True, blank=True,
+        help_text='Timestamp when user accepted T&C. Required by KDPA 2019.',
+    )
+    onboarding_completed_at = models.DateTimeField(null=True, blank=True)
+
     # ── Role & status ─────────────────────────────────────────────
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     approval_status = models.CharField(
