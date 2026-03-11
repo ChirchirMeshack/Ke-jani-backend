@@ -28,7 +28,7 @@ class ActiveUserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('role', 'admin')
+        extra_fields['role'] = 'admin'  # Enforce admin role
         extra_fields.setdefault('approval_status', 'not_required')
         extra_fields.setdefault('email_verified', True)
 

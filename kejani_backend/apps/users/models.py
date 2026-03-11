@@ -151,7 +151,8 @@ class PasswordResetToken(models.Model):
         super().save(*args, **kwargs)
 
     def is_valid(self):
-        return not self.is_used and self.expires_at > timezone.now()
+        user_valid = self.user.is_active and self.user.deleted_at is None
+        return not self.is_used and self.expires_at > timezone.now() and user_valid
 
     def __str__(self):
         return f'PasswordReset for {self.user.email}'

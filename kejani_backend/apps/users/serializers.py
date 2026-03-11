@@ -596,6 +596,15 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # ── Adjust refresh token lifetime for remember_me ────
         if not remember_me:
+            # Blacklist the default 7-day token created by super().validate()
+            original_refresh = data.get('refresh')
+            if original_refresh:
+                try:
+                    token = RefreshToken(original_refresh)
+                    token.blacklist()
+                except Exception:
+                    pass
+
             # Override with 1-day refresh token
             refresh = RefreshToken.for_user(user)
             refresh.set_exp(lifetime=timedelta(days=1))
