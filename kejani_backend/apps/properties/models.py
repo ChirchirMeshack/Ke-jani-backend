@@ -135,10 +135,9 @@ class Property(models.Model):
         related_name='properties',
         db_index=True,
     )
-    # PM fields — nullable until apps/property_managers/ is built.
-    # property_managers app will populate these when a landlord delegates.
-    pm = models.ForeignKey(
-        User,
+    # PM fields — populated by apps/property_managers/ when landlord delegates.
+    property_manager = models.ForeignKey(
+        'property_managers.PropertyManager',
         on_delete=models.SET_NULL,
         null=True, blank=True,
         related_name='managed_properties',
@@ -151,6 +150,22 @@ class Property(models.Model):
         default='self_managed',
     )
     pm_assigned_at = models.DateTimeField(null=True, blank=True)
+    pm_commission_rate = models.DecimalField(
+        max_digits=5, decimal_places=2, null=True, blank=True,
+        help_text="Commission % for this property. Set on assignment acceptance.",
+    )
+    pm_can_add_tenants = models.BooleanField(
+        default=True,
+        help_text="Whether the PM is allowed to add tenants to this property.",
+    )
+    pm_can_handle_maintenance = models.BooleanField(
+        default=True,
+        help_text="Whether the PM can handle maintenance requests.",
+    )
+    pm_expense_approval_threshold = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True,
+        help_text="PM must get landlord approval for expenses above this amount.",
+    )
 
     # ── Basic Info ────────────────────────────────────────────────
     name          = models.CharField(max_length=200)
