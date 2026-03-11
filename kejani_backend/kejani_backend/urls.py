@@ -32,6 +32,12 @@ urlpatterns = [
     # Auth
     path('api/auth/', include('apps.users.urls')),
 
+    # Banking
+    path('api/banking/', include('apps.banking.urls')),
+
+    # Landlords
+    path('api/landlords/', include('apps.landlords.urls')),
+
     # Health
     path('api/health/', health_check),
 ]
