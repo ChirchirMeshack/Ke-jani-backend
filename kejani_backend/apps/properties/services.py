@@ -13,23 +13,6 @@ from .signals import property_created, unit_created
 
 
 # ── Subscription Limits ─────────────────────────────────────────────
-# Source of truth for plan limits until apps/subscriptions/ is built.
-# When subscriptions app is ready: replace this dict with a DB query.
-# All callers (check_property_limits, check_unit_limits) stay the same.
-TIER_LIMITS = {
-    'solo':         {'max_units': 10,  'max_properties': 2},
-    'starter':      {'max_units': 30,  'max_properties': 5},
-    'growth':       {'max_units': 75,  'max_properties': -1},
-    'professional': {'max_units': 150, 'max_properties': -1},
-    'enterprise':   {'max_units': -1,  'max_properties': -1},
-    '':             {'max_units': 10,  'max_properties': 2},  # no tier = solo limits
-}
-
-PLAN_DISPLAY_NAMES = {
-    'solo': 'Solo', 'starter': 'Starter', 'growth': 'Growth',
-    'professional': 'Professional', 'enterprise': 'Enterprise', '': 'Solo',
-}
-
 
 def check_property_limits(landlord):
     """
@@ -39,9 +22,12 @@ def check_property_limits(landlord):
     :param landlord: Landlord model instance
     :raises SubscriptionLimitError: if at or over limit
     """
-    tier   = landlord.subscription_tier or ""
-    limits = TIER_LIMITS.get(tier, TIER_LIMITS[""])
-    max_p  = limits["max_properties"]
+    # Safely get limit from subscription, default to solo limits if none
+    max_p = 2
+    plan_name = "Solo"
+    if hasattr(landlord.user, 'subscription'):
+        max_p = landlord.user.subscription.get_feature_limit('max_properties')
+        plan_name = landlord.user.subscription.plan.name
 
     if max_p == -1:  # -1 means unlimited
         return
@@ -52,7 +38,7 @@ def check_property_limits(landlord):
             resource="properties",
             current=current,
             limit=max_p,
-            plan_name=PLAN_DISPLAY_NAMES.get(tier, "Solo"),
+            plan_name=plan_name,
         )
 
 
@@ -65,9 +51,12 @@ def check_unit_limits(landlord):
     :param landlord: Landlord model instance
     :raises SubscriptionLimitError: if at or over limit
     """
-    tier   = landlord.subscription_tier or ""
-    limits = TIER_LIMITS.get(tier, TIER_LIMITS[""])
-    max_u  = limits["max_units"]
+    # Safely get limit from subscription, default to solo limits if none
+    max_u = 10
+    plan_name = "Solo"
+    if hasattr(landlord.user, 'subscription'):
+        max_u = landlord.user.subscription.get_feature_limit('max_units')
+        plan_name = landlord.user.subscription.plan.name
 
     if max_u == -1:
         return
@@ -80,7 +69,7 @@ def check_unit_limits(landlord):
             resource="units",
             current=current,
             limit=max_u,
-            plan_name=PLAN_DISPLAY_NAMES.get(tier, "Solo"),
+            plan_name=plan_name,
         )
 
 

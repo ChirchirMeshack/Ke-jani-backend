@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'apps.leases',
     'apps.tenants',
     'apps.property_managers',
+    'apps.subscriptions',
 ]
 
 MIDDLEWARE = [
@@ -293,7 +294,21 @@ CELERY_BEAT_SCHEDULE = {
         'task': 'users.expire_old_invitations',
         'schedule': crontab(hour=1, minute=0),
     },
+    'expire-trials-daily': {
+        'task': 'subscriptions.expire_trials',
+        'schedule': crontab(hour=2, minute=0),
+    },
+    'reset-sms-quotas-monthly': {
+        'task': 'subscriptions.reset_sms_quotas',
+        'schedule': crontab(hour=3, minute=0, day_of_month='1'),  # Runs on the 1st of every month
+    },
 }
+
+# ──────────────────────────────────────────────────────────────────
+# SUBSCRIPTIONS
+# ──────────────────────────────────────────────────────────────────
+TRIAL_DURATION_DAYS = config('TRIAL_DURATION_DAYS', default=30, cast=int)
+
 
 
 # ──────────────────────────────────────────────────────────────────

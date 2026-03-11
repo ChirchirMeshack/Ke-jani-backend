@@ -13,7 +13,6 @@ from rest_framework.exceptions import NotFound, ValidationError, PermissionDenie
 
 from .models import (
     PropertyManager, PmServiceArea, PmAssignmentRequest, CommissionRecord,
-    PM_TIER_LIMITS,
 )
 from .signals import pm_assigned
 
@@ -48,9 +47,12 @@ class PmLimitError(Exception):
 
 def check_pm_unit_limit(pm, new_units_to_add):
     """Checks whether accepting a new property would exceed unit limit."""
-    tier   = pm.subscription_tier
-    limits = PM_TIER_LIMITS.get(tier, {})
-    max_u  = limits.get("max_units", -1)
+    tier = pm.subscription_tier
+    
+    # Safely get limit from subscription, default to unlimited if no sub/plan found
+    max_u = -1
+    if hasattr(pm.user, 'subscription'):
+        max_u = pm.user.subscription.get_feature_limit('max_units')
 
     if max_u == -1:
         return  # Unlimited (enterprise_pm)
@@ -101,6 +103,12 @@ def update_pm_profile(pm, validated_data):
 def complete_pm_onboarding_step(pm, step_name):
     """Advances the PM onboarding wizard. Returns updated progress dict."""
     pm.complete_step(step_name)
+    
+    # Automatically issue PM trial subscription when they complete the subscription step
+    if step_name == 'subscription':
+        from apps.subscriptions.services import create_trial_subscription
+        create_trial_subscription(pm.user, pm.subscription_tier)
+        
     pm.refresh_from_db()
     return pm.onboarding_progress
 
@@ -405,6 +413,10 @@ def accept_pm_invite(token, user_data):
     request.pm = pm
     request.save(update_fields=["pm", "updated_at"])
     accept_assignment(pm=pm, assignment_request=request)
+
+    # Issue a trial subscription immediately for invitees
+    from apps.subscriptions.services import create_trial_subscription
+    create_trial_subscription(user, 'starter_pm')
 
     return pm, request
 
