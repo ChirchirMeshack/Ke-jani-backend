@@ -41,6 +41,12 @@ urlpatterns = [
     # Properties
     path('api/properties/', include('apps.properties.urls', namespace='properties')),
 
+    # Leases
+    path('api/leases/', include('apps.leases.urls', namespace='leases')),
+
+    # Tenants
+    path('api/tenants/', include('apps.tenants.urls', namespace='tenants')),
+
     # Health
     path('api/health/', health_check),
 ]

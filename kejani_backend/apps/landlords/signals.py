@@ -102,6 +102,14 @@ def on_unit_created(sender, unit_instance, property_instance, landlord, **kwargs
         pass
 
 
+def on_tenant_created(sender, tenant_instance, landlord, **kwargs):
+    """Advance wizard Step 4 (optional) when landlord adds first tenant."""
+    try:
+        landlord.complete_step("tenants")
+    except Exception:
+        pass  # Wizard step failure must never break tenant creation
+
+
 def connect_property_signals():
     """
     Called from LandlordsConfig.ready() to wire up signal listeners.
@@ -109,3 +117,10 @@ def connect_property_signals():
     """
     _get_property_created_signal().connect(on_property_created)
     _get_unit_created_signal().connect(on_unit_created)
+
+    # Connect tenant_created signal for wizard Step 4
+    try:
+        from apps.tenants.signals import tenant_created
+        tenant_created.connect(on_tenant_created)
+    except ImportError:
+        pass
