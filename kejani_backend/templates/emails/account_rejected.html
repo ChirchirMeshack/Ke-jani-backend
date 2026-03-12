@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"></head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto;">
+  <div style="background: #1a5632; padding: 20px; text-align: center;">
+    <h1 style="color: #fff; margin: 0;">KE-JANI</h1>
+  </div>
+  <div style="padding: 30px 20px;">
+    <h2>Account Registration Update</h2>
+    <p>Hello {{ user.first_name }},</p>
+    <p>We regret to inform you that your KE-JANI account registration was not approved at this time.</p>
+    {% if reason %}
+    <p><strong>Reason:</strong> {{ reason }}</p>
+    {% endif %}
+    <p>If you believe this was in error, please contact our support team at <a href="mailto:support@ke-jani.com">support@ke-jani.com</a>.</p>
+  </div>
+  <div style="background: #f5f5f5; padding: 15px; text-align: center; font-size: 12px; color: #999;">
+    &copy; KE-JANI. All rights reserved.
+  </div>
+</body>
+</html>
